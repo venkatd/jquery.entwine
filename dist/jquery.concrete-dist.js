@@ -753,7 +753,22 @@ Sizzle is good for finding elements for a selector, but not so good for telling 
 	 * Add focusin and focusout support to bind and live for browers other than IE. Designed to be usable in a delegated fashion (like $.live)
 	 * Copyright (c) 2007 Jörn Zaefferer
 	 */
-	$.support.focusInOut = !!($.browser.msie);
+    $.support.focusInOut = (function() {
+        var support = false;
+
+        function onfocusin() { support = true; }
+
+        var a = document.createElement('a');
+        a.href = "#"; // to make it focusable
+        a.addEventListener('focusin', onfocusin, false);
+
+        document.body.appendChild(a);
+        a.focus();
+        document.body.removeChild(a);
+
+        return support;
+    })();
+
 	if (!$.support.focusInOut) {
 		// Emulate focusin and focusout by binding focus and blur in capturing mode
 		$.each({focus: 'focusin', blur: 'focusout'}, function(original, fix){
